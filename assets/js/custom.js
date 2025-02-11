@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!emailValue) {
             message.textContent = "Please enter a valid email.";
             message.style.color = "red";
+            message.style.opacity = "1";
             return;
         }
 
@@ -96,13 +97,29 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(() => {
             console.log("Form submitted successfully!");
-            message.textContent = "Thank you for subscribing!";
-            message.style.color = "green";
 
-            // Hide form after submission
+            // Fade out the form smoothly before hiding
+            form.style.transition = "opacity 0.5s ease-out";
+            form.style.opacity = "0";
+
             setTimeout(() => {
-                form.style.display = "none";
-            }, 2000);
+                form.style.display = "none"; // Hide form completely after fade-out
+                
+                // Update and show the thank-you message with fade-in
+                message.textContent = "Thank you for subscribing!";
+                message.style.display = "block";
+                message.style.opacity = "0";
+                message.style.transition = "opacity 0.5s ease-in";
+                message.style.color = "#fff";
+                message.style.background = "rgba(255, 255, 255, 0.1)"; // Light transparent background
+                message.style.padding = "15px 20px";
+                message.style.borderRadius = "10px"; // Rounded corners
+                message.style.textAlign = "center";
+                message.style.width = "fit-content";
+                message.style.margin = "20px auto";
+
+                setTimeout(() => { message.style.opacity = "1"; }, 100);
+            }, 500); // Delay matches the form fade-out duration
         })
         .catch((error) => {
             console.error("Error submitting form:", error);
@@ -110,4 +127,5 @@ document.addEventListener("DOMContentLoaded", function () {
             message.style.color = "red";
         });
     });
+
 });
