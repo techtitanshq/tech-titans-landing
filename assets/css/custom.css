@@ -1,0 +1,85 @@
+/* Custom Styles for Tech Titans */
+
+/* Floating Navigation Bar */
+.floating-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 12px 25px;
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    font-size: 18px;
+}
+
+/* Enhance Tech Titans Logo Typography */
+#logo a {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Smooth Hover Effect for App Cards */
+.app-card {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.app-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.app-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Animated Gradient Background */
+.animated-background {
+    background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1b1b2f);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Fade-In Effect for Sections */
+section {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    display: block; /* Prevents accidental display:none */
+}
+
+section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff4081;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.back-to-top:hover {
+    background: #e60073;
+}
