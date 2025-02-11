@@ -16,15 +16,14 @@ document.addEventListener("DOMContentLoaded", function () {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add("visible");
+            } else {
+                entry.target.classList.remove("visible");
             }
         });
-    }, { threshold: 0.1 });
-    
+    }, { threshold: 0.2 });
+
     sections.forEach(section => {
         observer.observe(section);
-        if (section.getBoundingClientRect().top < window.innerHeight) {
-            section.classList.add("visible");
-        }
     });
 
     // Hover Animations for App Sections
@@ -49,24 +48,66 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     
     window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-            backToTop.style.display = "block";
-        } else {
-            backToTop.style.display = "none";
-        }
+        backToTop.style.display = window.scrollY > 300 ? "block" : "none";
     });
 
-    // Email Form Validation & Success Message
-    document.querySelector("form.cta").addEventListener("submit", function (e) {
+    // Email Form Submission (Prevents Redirect & Shows Message)
+    const form = document.getElementById("subscribeForm");
+    const message = document.getElementById("subscribeMessage");
+
+    if (!form || !message) {
+        console.error("Form elements not found!");
+        return;
+    }
+
+    form.addEventListener("submit", function (e) {
         e.preventDefault();
-        const emailInput = document.querySelector("#email");
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-        if (!emailRegex.test(emailInput.value)) {
-            alert("Please enter a valid email address.");
-        } else {
-            alert("Thank you for subscribing!");
-            emailInput.value = "";
+
+        const emailInput = document.getElementById("email");
+        if (!emailInput) {
+            console.error("Email input field not found!");
+            return;
         }
+
+        const emailValue = emailInput.value.trim();
+        console.log("Email Entered:", emailValue);
+
+        if (!emailValue) {
+            message.textContent = "Please enter a valid email.";
+            message.style.color = "red";
+            return;
+        }
+
+        // Google Forms Submission URL and Entry ID
+        const googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLScezShGgSc29JaRTVFABaDVuCR_IFzVx6-6r3xQiYVylq1mKg/formResponse";
+        const entryID = "entry.254437408";
+
+        // Create form data object
+        const formData = new FormData();
+        formData.append(entryID, emailValue);
+
+        console.log("Submitting form to Google...");
+
+        // Send data using Fetch API (Prevents Redirection)
+        fetch(googleFormURL, {
+            method: "POST",
+            mode: "no-cors",
+            body: formData
+        })
+        .then(() => {
+            console.log("Form submitted successfully!");
+            message.textContent = "Thank you for subscribing!";
+            message.style.color = "green";
+
+            // Hide form after submission
+            setTimeout(() => {
+                form.style.display = "none";
+            }, 2000);
+        })
+        .catch((error) => {
+            console.error("Error submitting form:", error);
+            message.textContent = "Error subscribing. Please try again.";
+            message.style.color = "red";
+        });
     });
 });
