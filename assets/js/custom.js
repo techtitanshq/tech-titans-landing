@@ -10,17 +10,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Fade-In Effect for Sections on Scroll
+    // Fade-In Effect for Sections on Scroll (Fixes Flickering)
     const sections = document.querySelectorAll("section");
+    let fadeOutTimers = {}; // Store timers for fade out prevention
+
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Clear any fade-out timer for this section
+                clearTimeout(fadeOutTimers[entry.target.id]);
                 entry.target.classList.add("visible");
+                entry.target.classList.remove("fading-out");
             } else {
-                entry.target.classList.remove("visible");
+                // Set a delay before actually removing "visible" (Prevents flickering)
+                fadeOutTimers[entry.target.id] = setTimeout(() => {
+                    if (!entry.isIntersecting) { // Double-check before fading out
+                        entry.target.classList.add("fading-out");
+                        entry.target.classList.remove("visible");
+                    }
+                }, 500); // Delay before removing (500ms)
             }
         });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.4 });
 
     sections.forEach(section => {
         observer.observe(section);
@@ -127,5 +138,4 @@ document.addEventListener("DOMContentLoaded", function () {
             message.style.color = "red";
         });
     });
-
 });
