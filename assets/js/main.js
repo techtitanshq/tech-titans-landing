@@ -1,65 +1,3 @@
-// (function ($) {
-//     var $window = $(window),
-//         $body = $('body');
-
-//     // Ensure jQuery is available
-//     if (typeof jQuery === "undefined") {
-//         console.error("jQuery is not loaded!");
-//         return;
-//     }
-
-//     // Ensure `browser` is defined
-//     if (typeof browser === "undefined") {
-//         console.warn("browser.min.js is missing or not loaded correctly.");
-//     }
-
-//     // Play initial animations on page load
-//     $window.on('load', function () {
-//         setTimeout(function () {
-//             $body.removeClass('is-preload');
-//         }, 100);
-//     });
-
-//     // Enable touch mode
-//     if (typeof browser !== "undefined" && browser.mobile) {
-//         $body.addClass('is-touch');
-//     }
-
-//     // Smooth scrolling links
-//     if ($.fn.scrolly) {
-//         $('.scrolly').scrolly({
-//             speed: 2000
-//         });
-//     } else {
-//         console.warn("Scrolly is not loaded.");
-//     }
-
-//     // Dropdown navigation
-//     if ($.fn.dropotron) {
-//         $('#nav > ul').dropotron({
-//             alignment: 'right',
-//             hideDelay: 350
-//         });
-//     } else {
-//         console.warn("Dropotron is not loaded.");
-//     }
-
-//     // Parallax Effect (Disable for mobile)
-//     var $spotlights = $('.spotlight');
-//     if (typeof browser !== "undefined" && !browser.mobile) {
-//         $spotlights.each(function () {
-//             var $this = $(this);
-//             $this.scrollex({
-//                 mode: 'middle',
-//                 top: 0,
-//                 bottom: 0,
-//                 initialize: function () { $this.addClass('inactive'); },
-//                 enter: function () { $this.removeClass('inactive'); }
-//             });
-//         });
-//     }
-
-// })(jQuery);
 (function ($) {
     var $window = $(window),
         $body = $('body');
@@ -82,12 +20,12 @@
         }, 100);
     });
 
-    // Enable touch mode
+    // Enable touch mode if on mobile
     if (typeof browser !== "undefined" && browser.mobile) {
         $body.addClass('is-touch');
     }
 
-    // Smooth scrolling links (from custom.js)
+    // Smooth scrolling for internal links
     $('a[href^="#"]').on("click", function (e) {
         e.preventDefault();
         const target = $(this.getAttribute("href"));
@@ -96,24 +34,25 @@
         }
     });
 
-    // Fade-In Effect for Sections on Scroll (from custom.js)
-    const sections = document.querySelectorAll("section");
-
+    // Fade-In Effect for Sections on Scroll using IntersectionObserver
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
-            let visibility = entry.intersectionRatio; // How much of the section is visible
-
-            // Adjust opacity dynamically based on visibility percentage
+            let visibility = entry.intersectionRatio;
             entry.target.style.opacity = visibility > 0.4 ? "1" : `${visibility}`;
             entry.target.style.transform = `translateY(${20 * (1 - visibility)}px)`;
+
+            if (visibility > 0.4) {
+                entry.target.classList.add('visible');
+            }
         });
     }, { threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] });
 
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+    // Observe sections, app cards, team cards
+    document.querySelectorAll("section").forEach(section => observer.observe(section));
+    document.querySelectorAll(".app-card").forEach(card => observer.observe(card));
+    document.querySelectorAll(".team-card").forEach(card => observer.observe(card));
 
-    // Hover Animations for App Sections (from custom.js)
+    // Hover Animations for App Cards
     $(".app-card").on("mouseenter", function () {
         $(this).css("transform", "scale(1.05)");
         $(this).css("transition", "transform 0.3s ease");
@@ -121,18 +60,16 @@
         $(this).css("transform", "scale(1)");
     });
 
-    // Floating "Back to Top" Button (from custom.js)
+    // Floating "Back to Top" Button
     const backToTop = $("<button>").text("↑").addClass("back-to-top").appendTo("body");
-
     backToTop.on("click", function () {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
-
     $(window).on("scroll", function () {
         backToTop.css("display", window.scrollY > 300 ? "block" : "none");
     });
 
-    // Email Form Submission (from custom.js)
+    // Email Form Submission
     const form = document.getElementById("subscribeForm");
     const message = document.getElementById("subscribeMessage");
 
@@ -156,7 +93,7 @@
                 return;
             }
 
-            // Google Forms Submission URL and Entry ID
+            // Google Forms Submission URL
             const googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLScezShGgSc29JaRTVFABaDVuCR_IFzVx6-6r3xQiYVylq1mKg/formResponse";
             const entryID = "entry.254437408";
 
@@ -166,7 +103,7 @@
 
             console.log("Submitting form to Google...");
 
-            // Send data using Fetch API (Prevents Redirection)
+            // Send data using Fetch API
             fetch(googleFormURL, {
                 method: "POST",
                 mode: "no-cors",
@@ -174,23 +111,19 @@
             })
             .then(() => {
                 console.log("Form submitted successfully!");
-
-                // Fade out the form smoothly before hiding
                 form.style.transition = "opacity 0.5s ease-out";
                 form.style.opacity = "0";
 
                 setTimeout(() => {
-                    form.style.display = "none"; // Hide form completely after fade-out
-
-                    // Update and show the thank-you message with fade-in
+                    form.style.display = "none";
                     message.textContent = "Thank you for subscribing!";
                     message.style.display = "block";
                     message.style.opacity = "0";
                     message.style.transition = "opacity 0.5s ease-in";
                     message.style.color = "#fff";
-                    message.style.background = "rgba(255, 255, 255, 0.1)"; // Light transparent background
+                    message.style.background = "rgba(255, 255, 255, 0.1)";
                     message.style.padding = "15px 20px";
-                    message.style.borderRadius = "10px"; // Rounded corners
+                    message.style.borderRadius = "10px";
                     message.style.textAlign = "center";
                     message.style.width = "fit-content";
                     message.style.margin = "20px auto";
